@@ -12,7 +12,9 @@ import 'package:piano_tutor/detail.dart';
 // The home screen.
 // Get the song list from server.
 Future<SongList> fetchSongs() async {
-  final response = await http.get(Uri.http('127.0.0.1:8000', 'music/songs'));
+  print("Making request");
+  final response = await http.get(Uri.http('20.204.171.206:8000', 'music/songs'));
+  print(response);
 
   if (response.statusCode == 200) {
     var decoded = json.decode(response.body);
@@ -78,8 +80,9 @@ class _MyAppState extends State<MyApp> {
   Future<SongList> futureSongs;
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
+    print("Fetching songs");
     futureSongs = fetchSongs();
   }
   @override

@@ -113,7 +113,12 @@ class _DetailState extends State<Detail> {
   // Listening to events for the scroll controller of the music sheet.
   _scrollListener() async {
     double scroll_length = 71.0*100;
-    if (_controller.offset == scroll_length){
+    print(_controller.offset);
+    print(_controller.position.maxScrollExtent);
+    print(scroll_length);
+
+    if (_controller.offset == _controller.position.maxScrollExtent){
+      print("Scroll length reached");
       //_controller.jumpTo(scroll_length);
       await _stopRecording();
       showButton = true;
@@ -125,8 +130,9 @@ class _DetailState extends State<Detail> {
     double scroll_length = 71.0*100;
     //_controller.position.maxScrollExtent
     int time_for_one_beat = (60000 / selected_bpm).toInt();
-    _controller.animateTo(scroll_length,
-        curve: Curves.linear, duration: Duration(milliseconds: 71*time_for_one_beat));
+    print("Started movind sheet");
+    _controller.animateTo(scroll_length, curve: Curves.linear, duration: Duration(milliseconds: 71*time_for_one_beat));
+    print("Done moving sheet");
   }
 
   _backtoStart() {
@@ -563,6 +569,7 @@ class _DetailState extends State<Detail> {
     );
   }
 
+  //Run report
   Future<void> _uploadRecording() async {
     // Can only upload the recording when the recording is stopped.
     if (showButton) {
@@ -571,7 +578,9 @@ class _DetailState extends State<Detail> {
         status: 'loading...',
         maskType: EasyLoadingMaskType.black,
       );
-      var request = http.MultipartRequest('POST', Uri.http('127.0.0.1:8000', 'music/upload'));
+      print("Uploading file to server");
+      print(_prevRecordingPath);
+      var request = http.MultipartRequest('POST', Uri.http('20.204.171.206:8000', 'music/upload'));
       request.files.add(
           await http.MultipartFile.fromPath(
               'recording',
@@ -671,16 +680,20 @@ class _DetailState extends State<Detail> {
   }
 
   _startRecording() async {
+    print("Sterted audio recording");
     await audioRecorder.start();
     // await audioRecorder.current(channel: 0);
   }
 
   _stopRecording() async {
+    print("Called stop recording");
     await audioRecorder.stop();
   }
 
+  //On pressing record
   Future<void> _recordVoice() async {
     if (await FlutterAudioRecorder.hasPermissions) {
+      print("Inside record voice method");
       await _initRecorder();
 
       await _startRecording();
